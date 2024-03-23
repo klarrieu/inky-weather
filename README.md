@@ -2,6 +2,8 @@
 
 Simple scripts for displaying National Weather Service forecasts on Inky WHAT and PHAT e-ink displays.
 
+<p align="center"><img src='https://github.com/klarrieu/inky-weather/blob/main/inky-weather-example.jpg' width="400"></img></p>
+
 ## Setup
 
 1. Clone this repository and navigate to its directory:
