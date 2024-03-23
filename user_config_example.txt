@@ -1,0 +1,2 @@
+user_email: 'username@example.com'
+location: (39.123, -120.456)
