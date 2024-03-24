@@ -149,5 +149,5 @@ class WeatherScreen:
         if fast:
             self.display.fast_show(style=self.display.BLACK)
         else:
-            self.display.show(busy_wait=False)
+            self.display.show() # busy_wait=False)
         return
