@@ -14,4 +14,4 @@ if __name__ == "__main__":
 
     ws = WeatherScreen(location=location, headers=headers)
     ws.update_forecasts()
-    ws.update_screen()
+    ws.update_screen(fast=True)
