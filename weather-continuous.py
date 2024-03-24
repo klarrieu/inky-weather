@@ -27,6 +27,7 @@ if __name__ == "__main__":
     while True:
         if time.time() - t0 > update_time:
             ws.update_forecasts()
+            t0 = time.time()
         for frame_i in range(3):
             ws.update_screen(frame_i=frame_i, fast=True)
             time.sleep(cycle_time)
