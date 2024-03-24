@@ -21,6 +21,7 @@ if __name__ == "__main__":
     # initialize WeatherScreen object
     ws = WeatherScreen(location=location, headers=headers)
     ws.update_forecasts()
+    ws.update_screen(fast=False)
     #
     t0 = time.time()
     while True:
