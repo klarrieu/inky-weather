@@ -38,6 +38,19 @@ def wrap(quote, width, font):
     return reflowed
 
 
+def get_retry(*args, **kwargs):
+    max_retries = kwargs['max_retries'] if 'max_retries' in kwargs.keys() else 5
+    r = requests.get(*args, **kwargs)
+    retries = 0
+    while r.status_code != 200:
+        if retries > max_retries:
+            raise Exception('Max retries exceeded.')
+        time.sleep(2 ** retries)
+        r = requests.get(*args, **kwargs)
+        retries += 1
+    return r
+
+
 class WeatherScreen:
     def __init__(self, location, headers):
         self.location = location
@@ -51,7 +64,7 @@ class WeatherScreen:
         self.img = Image.new("P", self.display.resolution)
 
     def get_endpoints(self):
-        r = requests.get(f'https://api.weather.gov/points/{self.location[0]},{self.location[1]}/', headers=self.headers)
+        r = get_retry(f'https://api.weather.gov/points/{self.location[0]},{self.location[1]}/', headers=self.headers)
         # query lat, lon of desired forecast location, returns forecast endpoints at grid cells for for local NWS office's forecast model
         properties = r.json()['properties']
         forecast_endpoint = properties['forecast']
@@ -66,10 +79,8 @@ class WeatherScreen:
         print('Retrieving 7-day forecast')
         if not self.forecast_endpoint:
             raise IOError('No endpoints set. Run self.get_endpoints() first.')
-        r = requests.get(self.forecast_endpoint, headers=self.headers)
+        r = get_retry(self.forecast_endpoint, headers=self.headers)
         print(r.status_code)
-        if r.status_code != 200:
-            print(r.text)
         forecast = r.json()
         return forecast
 
@@ -78,7 +89,7 @@ class WeatherScreen:
         print('Retrieving hourly forecast')
         if not self.hourly_forecast_endpoint:
             raise IOError('No endpoints set. Run self.get_endpoints() first.')
-        r = requests.get(self.hourly_forecast_endpoint, headers=self.headers)
+        r = get_retry(self.hourly_forecast_endpoint, headers=self.headers)
         print(r.status_code)
         forecast = r.json()
         return forecast
@@ -93,7 +104,7 @@ class WeatherScreen:
 
     def get_nws_icon(self, icon_url, icon_size=127):
         # get NWS icon
-        icon = Image.open(requests.get(icon_url.replace('medium', 'large'), stream=True).raw)
+        icon = Image.open(get_retry(icon_url.replace('medium', 'large'), stream=True).raw)
         icon = icon.resize((icon_size, icon_size), resample=Image.Resampling.BICUBIC)
         # convert icon to red/black/white color palette
         pal_img = Image.new("P", (1, 1))
